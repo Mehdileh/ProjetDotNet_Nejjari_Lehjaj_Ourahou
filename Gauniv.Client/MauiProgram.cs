@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Maui;
 using Gauniv.Client.Services;
+using Gauniv.Client.ViewModels;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Storage;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Gauniv.Client
 {
@@ -23,16 +25,21 @@ namespace Gauniv.Client
             builder.Logging.AddDebug();
 #endif
 
-            // 🔹 Enregistrer NetworkService en singleton
+            // 🔹 Enregistrement des services et ViewModels
+            builder.Services.AddHttpClient<GameService>(client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:5231/api/"); // 🔥 Adapter si nécessaire
+            });
+
+            builder.Services.AddSingleton<GameListViewModel>();
+
+            // 🔹 Enregistrer NetworkService si nécessaire
             builder.Services.AddSingleton<NetworkService>();
 
             var app = builder.Build();
 
-            Task.Run(() =>
-            {
-                // 🔥 Initialisation réseau / connexion serveur (si nécessaire)
-                NetworkService.Instance.LoadToken();
-            });
+            // Plus besoin de `Task.Run(() => NetworkService.Instance.LoadToken());` 
+            // car `NetworkService` est enregistré en Singleton
 
             return app;
         }

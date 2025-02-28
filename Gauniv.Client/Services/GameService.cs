@@ -6,9 +6,16 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Gauniv.Client.Models;
+using Windows.Gaming.Preview.GamesEnumeration;
 
 namespace Gauniv.Client.Services
 {
+
+    class GameList
+    {
+        public int TotalCount { get; set; } = 0;
+        public List<Game> Games { get; set; } = new();
+    }
     public class GameService : IDisposable
     {
         private readonly HttpClient _httpClient;
@@ -39,14 +46,14 @@ namespace Gauniv.Client.Services
                     return new List<Game>();
                 }
 
-                var games = JsonSerializer.Deserialize<List<Game>>(json, new JsonSerializerOptions
+                var games = JsonSerializer.Deserialize<GameList>(json, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true,
                     WriteIndented = true
-                }) ?? new List<Game>();
+                }) ?? new GameList();
 
-                Console.WriteLine($"✅ {games.Count} jeux récupérés !");
-                return games;
+                Console.WriteLine($"✅ {games.TotalCount} jeux récupérés !");
+                return games.Games;
             }
             catch (JsonException jex)
             {
