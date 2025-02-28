@@ -1,0 +1,23 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
+             x:Class="Gauniv.Client.Pages.RegisterPage">
+
+    <ContentPage.BindingContext>
+        <vm:RegisterViewModel />
+    </ContentPage.BindingContext>
+
+    <StackLayout Padding="20">
+        <Label Text="Inscription" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+
+        <Entry Placeholder="Nom d'utilisateur" Text="{Binding Username}" />
+        <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" />
+        <Entry Placeholder="Mot de passe" Text="{Binding Password}" IsPassword="True" />
+        <Entry Placeholder="Prénom" Text="{Binding FirstName}" />
+        <Entry Placeholder="Nom de famille" Text="{Binding LastName}" />
+
+        <Button Text="S'inscrire" Command="{Binding RegisterCommand}" BackgroundColor="Green" TextColor="White" />
+
+        <Button Text="Déjà un compte ? Se connecter" Command="{Binding NavigateToLoginCommand}" BackgroundColor="Transparent" TextColor="Blue" />
+    </StackLayout>
+</ContentPage>

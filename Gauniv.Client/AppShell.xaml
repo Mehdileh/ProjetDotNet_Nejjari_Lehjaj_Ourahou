@@ -4,8 +4,13 @@
        xmlns:local="clr-namespace:Gauniv.Client.Pages"
        x:Class="Gauniv.Client.AppShell">
 
+    <!-- Page de Connexion (Accueil par défaut) -->
+    <ShellContent Title="Connexion" Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
+
+    <!-- Page d'inscription -->
+    <ShellContent Title="Inscription" Route="RegisterPage" ContentTemplate="{DataTemplate local:RegisterPage}" />
+
+    <!-- Page des Jeux (accessible après connexion) -->
     <ShellContent Title="Jeux" Route="games" ContentTemplate="{DataTemplate local:GamePage}" />
 
-
 </Shell>
-    
