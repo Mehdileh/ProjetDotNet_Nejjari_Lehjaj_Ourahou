@@ -19,13 +19,13 @@ namespace Gauniv.WebServer.Services
             this.serviceProvider = serviceProvider;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            using (var scope = serviceProvider.CreateScope()) // this will use `IServiceScopeFactory` internally
+            using (var scope = serviceProvider.CreateScope()) // Utilisation de IServiceScopeFactory
             {
                 applicationDbContext = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
-                if(applicationDbContext is null)
+                if (applicationDbContext is null)
                 {
                     throw new Exception("ApplicationDbContext is null");
                 }
@@ -35,9 +35,55 @@ namespace Gauniv.WebServer.Services
                     applicationDbContext.Database.Migrate();
                 }
 
-                // Ajouter ici les données que vous insérer dans votre DB au démarrage
+                // 🔥 Création des rôles "Admin" et "Joueur"
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                string[] roleNames = { "Admin", "Joueur" };
 
-                return Task.CompletedTask;
+                foreach (var roleName in roleNames)
+                {
+                    if (!await roleManager.RoleExistsAsync(roleName))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(roleName));
+                        Console.WriteLine($"✅ Rôle créé : {roleName}");
+                    }
+                }
+
+                // 🔥 Création d'un administrateur par défaut
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                string adminEmail = "nejjari@example.com";
+                string adminPassword = "nejjari123";
+
+                var adminUser = await userManager.FindByEmailAsync(adminEmail);
+                if (adminUser == null)
+                {
+                    adminUser = new User
+                    {
+                        UserName = "Admin",
+                        Email = adminEmail,
+                        FirstName = "Nizar",  // ✅ Ajout correct des valeurs
+                        LastName = "Nejjari"  // ✅ Ajout correct des valeurs
+                    };
+
+                    var result = await userManager.CreateAsync(adminUser, adminPassword);
+
+                    if (result.Succeeded)
+                    {
+                        await userManager.AddToRoleAsync(adminUser, "Admin");
+                        Console.WriteLine("✅ Administrateur créé !");
+                    }
+                    else
+                    {
+                        Console.WriteLine("🚨 Erreur lors de la création de l'administrateur :");
+                        foreach (var error in result.Errors)
+                        {
+                            Console.WriteLine($"❌ {error.Description}");
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("ℹ️ L'administrateur existe déjà.");
+                }
             }
         }
 

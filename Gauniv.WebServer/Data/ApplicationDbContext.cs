@@ -10,6 +10,23 @@ namespace Gauniv.WebServer.Data
             : base(options)
         {
         }
+
         public DbSet<Game> Games { get; set; }
+        public DbSet<Category> Categories { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Définition de la relation Many-to-Many entre Game et Category
+            modelBuilder.Entity<Game>()
+                .HasMany(g => g.Categories)
+                .WithMany(c => c.Games);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.OwnedGames)
+                .WithMany();
+
+        }
     }
 }

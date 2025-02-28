@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Gauniv.Client.Services;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Storage;
 
 namespace Gauniv.Client
 {
@@ -10,7 +11,8 @@ namespace Gauniv.Client
         {
             var builder = MauiApp.CreateBuilder();
             builder
-                .UseMauiApp<App>().UseMauiCommunityToolkit()
+                .UseMauiApp<App>()
+                .UseMauiCommunityToolkit()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
@@ -18,15 +20,20 @@ namespace Gauniv.Client
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
+
+            // 🔹 Enregistrer NetworkService en singleton
+            builder.Services.AddSingleton<NetworkService>();
 
             var app = builder.Build();
 
             Task.Run(() =>
             {
-                // Vous pouvez initialiser la connection au serveur a partir d'ici
+                // 🔥 Initialisation réseau / connexion serveur (si nécessaire)
+                NetworkService.Instance.LoadToken();
             });
+
             return app;
         }
     }
