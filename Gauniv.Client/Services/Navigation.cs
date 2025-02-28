@@ -30,7 +30,7 @@ namespace Gauniv.Client.Services
         {
             Routing.RegisterRoute($"{typeof(T).Name}", typeof(T));
             string t = $"{typeof(T).Name}";
-            if(clear)
+            if (clear)
             {
                 await Shell.Current.Navigation.PopToRootAsync();
             }

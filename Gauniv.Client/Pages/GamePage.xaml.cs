@@ -1,24 +1,22 @@
-﻿using Gauniv.Client.ViewModel;
+﻿using Gauniv.Client.Models;
+using Gauniv.Client.ViewModels;
 using Microsoft.Maui.Controls;
 
 namespace Gauniv.Client.Pages
 {
     public partial class GamePage : ContentPage
     {
-        private readonly GameViewModel _viewModel;
-
         public GamePage()
         {
             InitializeComponent();
-            _viewModel = new GameViewModel();
-            BindingContext = _viewModel;
         }
 
-        protected override async void OnAppearing()
+        private async void OnGameSelected(object sender, SelectedItemChangedEventArgs e)
         {
-            base.OnAppearing();
-            Console.WriteLine("📌 `OnAppearing()` appelé, chargement des jeux...");
-            await _viewModel.LoadGamesCommand.ExecuteAsync(null);
+            if (e.SelectedItem is Game selectedGame)
+            {
+                await Navigation.PushAsync(new GameDetailsPage(selectedGame.Id));
+            }
         }
     }
 }

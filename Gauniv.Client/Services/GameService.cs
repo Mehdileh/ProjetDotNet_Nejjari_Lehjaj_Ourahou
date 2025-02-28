@@ -1,22 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
+using System.Text;
 using System.Threading.Tasks;
 using Gauniv.Client.Models;
-using Windows.Gaming.Preview.GamesEnumeration;
 
 namespace Gauniv.Client.Services
 {
-
-    class GameList
-    {
-        public int TotalCount { get; set; } = 0;
-        public List<Game> Games { get; set; } = new();
-    }
-    public class GameService : IDisposable
+    public class GameService
     {
         private readonly HttpClient _httpClient;
 
@@ -24,84 +17,34 @@ namespace Gauniv.Client.Services
         {
             _httpClient = new HttpClient
             {
-                BaseAddress = new Uri("http://localhost:5231/api/") // 🔥 Adapter si nécessaire
+                BaseAddress = new Uri("http://localhost:5231/api/")
             };
         }
 
-        /// ✅ **Récupérer la liste des jeux**
         public async Task<List<Game>> GetGamesAsync()
         {
-            Console.WriteLine("📌 Appel de GetGamesAsync()...");
+            var response = await _httpClient.GetAsync("games");
+            if (!response.IsSuccessStatusCode) return new List<Game>();
 
-            try
-            {
-                var response = await _httpClient.GetAsync("games");
-                string json = await response.Content.ReadAsStringAsync();
+            string json = await response.Content.ReadAsStringAsync();
+            var gamesList = JsonSerializer.Deserialize<GameList>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-                Console.WriteLine($"📌 JSON reçu : {json}"); // 🔥 Ajout du log pour voir la réponse API
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine($"❌ Erreur API : {json}");
-                    return new List<Game>();
-                }
-
-                var games = JsonSerializer.Deserialize<GameList>(json, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true,
-                    WriteIndented = true
-                }) ?? new GameList();
-
-                Console.WriteLine($"✅ {games.TotalCount} jeux récupérés !");
-                return games.Games;
-            }
-            catch (JsonException jex)
-            {
-                Console.WriteLine($"❌ Erreur JSON : {jex.Message}");
-                return new List<Game>();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Erreur GetGamesAsync : {ex.Message}");
-                return new List<Game>();
-            }
+            return gamesList?.Games ?? new List<Game>();
         }
 
-
-
-        /// ✅ **Récupérer les jeux possédés**
-        public async Task<List<Game>> GetOwnedGamesAsync(string token)
+        public async Task<Game> GetGameByIdAsync(int id)
         {
-            try
-            {
-                SetAuthorizationHeader(token);
-                var response = await _httpClient.GetAsync("games/owned");
+            var response = await _httpClient.GetAsync($"games/{id}");
+            if (!response.IsSuccessStatusCode) return null;
 
-                if (!response.IsSuccessStatusCode)
-                {
-                    Console.WriteLine($"❌ Erreur API : {await response.Content.ReadAsStringAsync()}");
-                    return new List<Game>();
-                }
-
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<Game>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new List<Game>();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"❌ Erreur GetOwnedGamesAsync : {ex.Message}");
-                return new List<Game>();
-            }
+            string json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<Game>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
+    }
 
-        /// 🔥 **Ajout du token dans l'Authorization Header**
-        private void SetAuthorizationHeader(string token)
-        {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        }
-
-        public void Dispose()
-        {
-            _httpClient.Dispose();
-        }
+    class GameList
+    {
+        public int TotalCount { get; set; }
+        public List<Game> Games { get; set; } = new();
     }
 }

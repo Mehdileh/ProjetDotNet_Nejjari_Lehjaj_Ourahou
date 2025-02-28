@@ -4,6 +4,8 @@
        xmlns:local="clr-namespace:Gauniv.Client.Pages"
        x:Class="Gauniv.Client.AppShell">
 
-    <ShellContent Title="Jeux" ContentTemplate="{DataTemplate local:GamePage}" Route="games" />
+    <ShellContent Title="Jeux" Route="games" ContentTemplate="{DataTemplate local:GamePage}" />
+
 
 </Shell>
+    

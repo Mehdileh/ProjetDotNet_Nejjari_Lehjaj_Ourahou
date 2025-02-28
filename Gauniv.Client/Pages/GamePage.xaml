@@ -1,40 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:Gauniv.Client.ViewModel"
-             x:Class="Gauniv.Client.Pages.GamePage"
-             x:DataType="vm:GameViewModel"
-             Title="Liste des Jeux">
+             xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
+             x:Class="Gauniv.Client.Pages.GamePage">
 
-	<StackLayout Padding="10">
-		<Label Text="Liste des Jeux Disponibles" FontSize="20" FontAttributes="Bold" />
+  <ContentPage.BindingContext>
+    <vm:GameListViewModel />
+  </ContentPage.BindingContext>
 
-		<ListView ItemsSource="{Binding Games}" SelectionMode="None">
-			<ListView.ItemTemplate>
-				<DataTemplate>
-					<ViewCell>
-						<StackLayout Padding="5">
-							<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
-							<Label Text="{Binding Description}" FontSize="14" TextColor="Gray"/>
-						</StackLayout>
-					</ViewCell>
-				</DataTemplate>
-			</ListView.ItemTemplate>
-		</ListView>
-
-		<Label Text="Vos Jeux Possédés" FontSize="20" FontAttributes="Bold" Margin="20,10,0,0" />
-
-		<ListView ItemsSource="{Binding OwnedGames}" SelectionMode="None">
-			<ListView.ItemTemplate>
-				<DataTemplate>
-					<ViewCell>
-						<StackLayout Padding="5">
-							<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
-						</StackLayout>
-					</ViewCell>
-				</DataTemplate>
-			</ListView.ItemTemplate>
-		</ListView>
-
-	</StackLayout>
+  <StackLayout Padding="10">
+    <ListView ItemsSource="{Binding Games}"
+              ItemSelected="OnGameSelected">
+      <ListView.ItemTemplate>
+        <DataTemplate>
+          <ViewCell>
+            <StackLayout Padding="5">
+              <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
+              <Label Text="{Binding Description}" FontSize="14"/>
+              <Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="14"/>
+            </StackLayout>
+          </ViewCell>
+        </DataTemplate>
+      </ListView.ItemTemplate>
+    </ListView>
+  </StackLayout>
 </ContentPage>

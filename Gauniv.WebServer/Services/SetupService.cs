@@ -60,8 +60,8 @@ namespace Gauniv.WebServer.Services
                     {
                         UserName = "Admin",
                         Email = adminEmail,
-                        FirstName = "Nizar",  // ✅ Ajout correct des valeurs
-                        LastName = "Nejjari"  // ✅ Ajout correct des valeurs
+                        FirstName = "Nizar",
+                        LastName = "Nejjari"
                     };
 
                     var result = await userManager.CreateAsync(adminUser, adminPassword);
@@ -84,6 +84,66 @@ namespace Gauniv.WebServer.Services
                 {
                     Console.WriteLine("ℹ️ L'administrateur existe déjà.");
                 }
+
+                // 🔥 Ajout des catégories par défaut
+                var defaultCategories = new List<Category>
+                {
+                    new Category { Name = "RPG" },
+                    new Category { Name = "Open World" },
+                    new Category { Name = "Racing" },
+                    new Category { Name = "Shooter" },
+                    new Category { Name = "Football" },
+                    new Category { Name = "Survival" }
+                };
+
+                foreach (var category in defaultCategories)
+                {
+                    var existingCategory = await applicationDbContext.Categories.FirstOrDefaultAsync(c => c.Name == category.Name);
+                    if (existingCategory == null)
+                    {
+                        applicationDbContext.Categories.Add(category);
+                        Console.WriteLine($"✅ Catégorie ajoutée : {category.Name}");
+                    }
+                }
+
+                await applicationDbContext.SaveChangesAsync();
+
+                // 🔍 Récupérer les catégories depuis la base
+                var rpgCategory = await applicationDbContext.Categories.FirstOrDefaultAsync(c => c.Name == "RPG");
+                var openWorldCategory = await applicationDbContext.Categories.FirstOrDefaultAsync(c => c.Name == "Open World");
+                var racingCategory = await applicationDbContext.Categories.FirstOrDefaultAsync(c => c.Name == "Racing");
+                var shooterCategory = await applicationDbContext.Categories.FirstOrDefaultAsync(c => c.Name == "Shooter");
+                var footballCategory = await applicationDbContext.Categories.FirstOrDefaultAsync(c => c.Name == "Football");
+                var survivalCategory = await applicationDbContext.Categories.FirstOrDefaultAsync(c => c.Name == "Survival");
+
+                if (rpgCategory == null || openWorldCategory == null || racingCategory == null ||
+                    shooterCategory == null || footballCategory == null || survivalCategory == null)
+                {
+                    Console.WriteLine("🚨 Erreur : Une ou plusieurs catégories n'ont pas été trouvées !");
+                    return;
+                }
+
+                // 🔥 Ajout des jeux avec catégories
+                var defaultGames = new List<Game>
+                {
+                    new Game { Name = "The Witcher 3", Description = "RPG Open World", Price = 39.99M, FilePath = "C:\\games\\witcher3.exe", Categories = new List<Category> { rpgCategory, openWorldCategory } },
+                    new Game { Name = "Grand Theft Auto 6", Description = "RPG Open World", Price = 70.99M, FilePath = "C:\\games\\GTA6.exe", Categories = new List<Category> { rpgCategory, openWorldCategory } },
+                    new Game { Name = "Red Dead Redemption", Description = "Texas and shit", Price = 50.00M, FilePath = "C:\\games\\RDR.exe", Categories = new List<Category> { openWorldCategory } },
+                    new Game { Name = "Max Payne", Description = "Semi Open World", Price = 15.00M, FilePath = "C:\\games\\MP.exe", Categories = new List<Category> { shooterCategory } },
+                    new Game { Name = "Forza Horizon 5", Description = "Racing Game", Price = 45.00M, FilePath = "C:\\games\\FH5.exe", Categories = new List<Category> { racingCategory } }
+                };
+
+                foreach (var game in defaultGames)
+                {
+                    var existingGame = await applicationDbContext.Games.FirstOrDefaultAsync(g => g.Name == game.Name);
+                    if (existingGame == null)
+                    {
+                        applicationDbContext.Games.Add(game);
+                        Console.WriteLine($"✅ Jeu ajouté : {game.Name}");
+                    }
+                }
+
+                await applicationDbContext.SaveChangesAsync();
             }
         }
 

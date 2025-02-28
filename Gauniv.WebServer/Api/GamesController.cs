@@ -74,20 +74,32 @@ namespace Gauniv.WebServer.Api
         }
 
 
-        /// 📌 **POST /api/games** - Ajouter un jeu
+        /// 📌 **POST /api/games** - Ajouter un jeu avec ses catégories
         [HttpPost]
         public async Task<IActionResult> AddGame([FromBody] GameDto gameDto)
         {
-            if (gameDto == null)
+            if (gameDto == null || string.IsNullOrWhiteSpace(gameDto.Name))
                 return BadRequest("Les données du jeu sont invalides.");
 
+            // Vérifier si les catégories existent dans la base
+            var categories = await _context.Categories
+                .Where(c => gameDto.Categories.Contains(c.Name))
+                .ToListAsync();
+
+            // Mapper GameDto vers Game
             var game = _mapper.Map<Game>(gameDto);
+
+            // Associer les catégories trouvées
+            game.Categories = categories;
+
             _context.Games.Add(game);
             await _context.SaveChangesAsync();
 
+            // Retourner la réponse avec les catégories associées
             var gameDtoResponse = _mapper.Map<GameDto>(game);
             return CreatedAtAction(nameof(GetGameById), new { id = game.Id }, gameDtoResponse);
         }
+
 
         /// 📌 **GET /api/games/{id}** - Obtenir un jeu par ID
         [HttpGet("{id}")]
@@ -105,7 +117,6 @@ namespace Gauniv.WebServer.Api
         }
 
         /// 📌 **DELETE /api/games/{id}** - Supprimer un jeu
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame(int id)
         {
@@ -141,7 +152,6 @@ namespace Gauniv.WebServer.Api
         }
 
         /// 📌 **POST /api/games/{id}/categories/{categoryId}** - Associer une catégorie à un jeu
-        [Authorize(Roles = "Admin")]
         [HttpPost("{id}/categories/{categoryId}")]
         public async Task<IActionResult> AddCategoryToGame(int id, int categoryId)
         {
@@ -161,7 +171,6 @@ namespace Gauniv.WebServer.Api
         }
 
         /// 📌 **DELETE /api/games/{id}/categories/{categoryId}** - Retirer une catégorie d'un jeu
-        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}/categories/{categoryId}")]
         public async Task<IActionResult> RemoveCategoryFromGame(int id, int categoryId)
         {
@@ -182,7 +191,6 @@ namespace Gauniv.WebServer.Api
 
 
         /// 📌 **POST /api/games/{id}/buy** - Acheter un jeu
-        [Authorize]
         [HttpPost("{id}/buy")]
         public async Task<IActionResult> BuyGame(int id)
         {
@@ -212,7 +220,6 @@ namespace Gauniv.WebServer.Api
         }
 
         /// 📌 **GET /api/games/owned** - Liste des jeux achetés par l'utilisateur
-        [Authorize]
         [HttpGet("owned")]
         public async Task<IActionResult> GetOwnedGames()
         {
