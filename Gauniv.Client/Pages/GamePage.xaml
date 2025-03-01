@@ -1,26 +1,48 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
-             x:Class="Gauniv.Client.Pages.GamePage">
+             xmlns:models="clr-namespace:Gauniv.Client.Models"
+             x:Class="Gauniv.Client.Pages.GamePage"
+             x:DataType="{x:Type vm:GameListViewModel}">
 
-  <ContentPage.BindingContext>
-    <vm:GameListViewModel />
-  </ContentPage.BindingContext>
+    <ContentPage.BindingContext>
+        <vm:GameListViewModel />
+    </ContentPage.BindingContext>
 
-  <StackLayout Padding="10">
-    <ListView ItemsSource="{Binding Games}"
-              ItemSelected="OnGameSelected">
-      <ListView.ItemTemplate>
-        <DataTemplate>
-          <ViewCell>
-            <StackLayout Padding="5">
-              <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
-              <Label Text="{Binding Description}" FontSize="14"/>
-              <Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="14"/>
-            </StackLayout>
-          </ViewCell>
-        </DataTemplate>
-      </ListView.ItemTemplate>
-    </ListView>
-  </StackLayout>
+    <StackLayout Padding="10">
+
+        <!-- Checkbox pour filtrer les jeux possédés -->
+        <StackLayout Orientation="Horizontal">
+            <CheckBox IsChecked="{Binding ShowOwnedGames}" />
+            <Label Text="Afficher uniquement mes jeux" VerticalOptions="Center"/>
+        </StackLayout>
+
+        <ListView ItemsSource="{Binding Games}"
+                  SelectedItem="{Binding SelectedGame, Mode=TwoWay}"
+                  HasUnevenRows="True">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type models:Game}">
+                    <ViewCell>
+                        <StackLayout Padding="5">
+                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
+                            <Label Text="{Binding Description}" FontSize="14"/>
+                            <Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="14"/>
+
+                            <!-- Afficher le bon bouton selon si l'utilisateur possède le jeu -->
+                            <Button Text="Acheter" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameListViewModel}}, Path=BuyGameCommand}"
+                                    CommandParameter="{Binding .}"
+                                    IsVisible="{Binding IsOwned, Converter={StaticResource InverseBooleanConverter}}" />
+
+                            <Button Text="Jouer" 
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameListViewModel}}, Path=PlayGameCommand}"
+                                    CommandParameter="{Binding .}"
+                                    IsVisible="{Binding IsOwned}" />
+
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
 </ContentPage>

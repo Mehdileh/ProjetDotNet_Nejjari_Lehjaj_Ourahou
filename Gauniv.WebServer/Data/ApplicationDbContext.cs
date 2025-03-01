@@ -13,6 +13,7 @@ namespace Gauniv.WebServer.Data
 
         public DbSet<Game> Games { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<UserGame> UserGames { get; set; } // ✅ Ajout de la table de jointure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -23,10 +24,19 @@ namespace Gauniv.WebServer.Data
                 .HasMany(g => g.Categories)
                 .WithMany(c => c.Games);
 
-            modelBuilder.Entity<User>()
-                .HasMany(u => u.OwnedGames)
-                .WithMany();
+            // Définition de la relation Many-to-Many entre User et Game via UserGame
+            modelBuilder.Entity<UserGame>()
+                .HasKey(ug => new { ug.UserId, ug.GameId }); // Clé composite
 
+            modelBuilder.Entity<UserGame>()
+                .HasOne(ug => ug.User)
+                .WithMany(u => u.UserGames)
+                .HasForeignKey(ug => ug.UserId);
+
+            modelBuilder.Entity<UserGame>()
+                .HasOne(ug => ug.Game)
+                .WithMany(g => g.UserGames)
+                .HasForeignKey(ug => ug.GameId);
         }
     }
 }

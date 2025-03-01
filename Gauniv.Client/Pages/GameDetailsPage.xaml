@@ -1,7 +1,10 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
-             x:Class="Gauniv.Client.Pages.GameDetailsPage">
+             x:Class="Gauniv.Client.Pages.GameDetailsPage"
+             x:DataType="{x:Type vm:GameListViewModel}">
+             
+    
 
     <ContentPage.BindingContext>
         <vm:GameDetailsViewModel />

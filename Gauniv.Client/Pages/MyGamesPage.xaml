@@ -1,0 +1,23 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Gauniv.Client.Pages.MyGamesPage"
+             Title="Mes Jeux">
+
+	<StackLayout Padding="10">
+		<ListView x:Name="GamesListView"
+                  ItemsSource="{Binding OwnedGames}"
+                  HasUnevenRows="True">
+			<ListView.ItemTemplate>
+				<DataTemplate>
+					<ViewCell>
+						<StackLayout Padding="10">
+							<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
+							<Label Text="{Binding Description}" FontSize="14"/>
+							<Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="14"/>
+						</StackLayout>
+					</ViewCell>
+				</DataTemplate>
+			</ListView.ItemTemplate>
+		</ListView>
+	</StackLayout>
+</ContentPage>

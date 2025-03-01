@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Gauniv.WebServer.Api
 {
@@ -192,14 +193,14 @@ namespace Gauniv.WebServer.Api
 
         /// 📌 **POST /api/games/{id}/buy** - Acheter un jeu
         [HttpPost("{id}/buy")]
+        [Authorize] // Nécessite que l'utilisateur soit connecté
         public async Task<IActionResult> BuyGame(int id)
         {
-            var userId = _userManager.GetUserId(User);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
                 return Unauthorized("Utilisateur non authentifié.");
 
             var user = await _userManager.Users
-                .Include(u => u.OwnedGames)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user == null)
@@ -209,11 +210,16 @@ namespace Gauniv.WebServer.Api
             if (game == null)
                 return NotFound($"Le jeu avec l'ID {id} n'existe pas.");
 
-            if (user.OwnedGames.Contains(game))
+            // Vérifier si l'utilisateur possède déjà ce jeu
+            var existingEntry = await _context.UserGames
+                .FirstOrDefaultAsync(ug => ug.UserId == userId && ug.GameId == id);
+
+            if (existingEntry != null)
                 return BadRequest("Vous possédez déjà ce jeu.");
 
-            // Ajout du jeu à la liste des jeux possédés
-            user.OwnedGames.Add(game);
+            // Ajouter une entrée dans la table UserGames
+            var newUserGame = new UserGame { UserId = userId, GameId = id };
+            _context.UserGames.Add(newUserGame);
             await _context.SaveChangesAsync();
 
             return Ok($"✅ Jeu '{game.Name}' acheté avec succès !");
@@ -221,22 +227,31 @@ namespace Gauniv.WebServer.Api
 
         /// 📌 **GET /api/games/owned** - Liste des jeux achetés par l'utilisateur
         [HttpGet("owned")]
+        [Authorize]
         public async Task<IActionResult> GetOwnedGames()
         {
-            var userId = _userManager.GetUserId(User);
+            var authHeader = Request.Headers["Authorization"].ToString();
+            Console.WriteLine($"📡 Header Authorization reçu : {authHeader}");
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
+            {
+                Console.WriteLine("❌ Aucun utilisateur authentifié !");
                 return Unauthorized("Utilisateur non authentifié.");
+            }
 
-            var user = await _context.Users
-                .Include(u => u.OwnedGames)
-                .FirstOrDefaultAsync(u => u.Id == userId);
+            Console.WriteLine($"✅ Utilisateur authentifié : {userId}");
 
-            if (user == null)
-                return NotFound("Utilisateur non trouvé.");
+            var ownedGames = await _context.UserGames
+                .Where(ug => ug.UserId == userId)
+                .Select(ug => ug.Game)
+                .ToListAsync();
 
-            var ownedGamesDto = _mapper.Map<List<GameDto>>(user.OwnedGames);
+            var ownedGamesDto = _mapper.Map<List<GameDto>>(ownedGames);
             return Ok(ownedGamesDto);
         }
+
+
 
 
     }

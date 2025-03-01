@@ -27,5 +27,8 @@ namespace Gauniv.WebServer.Data
 
         // Relation Many-to-Many avec les catégories
         public List<Category> Categories { get; set; } = new();
+
+        public List<UserGame> UserGames { get; set; } = new();
+
     }
 }

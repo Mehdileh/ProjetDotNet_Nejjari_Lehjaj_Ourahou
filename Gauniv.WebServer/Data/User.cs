@@ -9,6 +9,6 @@ namespace Gauniv.WebServer.Data
         public string LastName { get; set; }
 
         // Liste des jeux possédés par l'utilisateur
-        public List<Game> OwnedGames { get; set; } = new();
+        public List<UserGame> UserGames { get; set; } = new();
     }
 }

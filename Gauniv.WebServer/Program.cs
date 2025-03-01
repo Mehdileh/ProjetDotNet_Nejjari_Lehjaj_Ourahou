@@ -55,8 +55,13 @@ builder.Services.AddDefaultIdentity<User>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders(); // ?? Ajout du support des tokens pour réinitialisation de mot de passe et autres fonctionnalités
 
-// ? Configuration de l'authentification JWT
-var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Secret"]);
+var jwtSecret = builder.Configuration["Jwt:Secret"];
+if (string.IsNullOrEmpty(jwtSecret))
+{
+    throw new InvalidOperationException("? Clé JWT non définie dans la configuration !");
+}
+
+var key = Encoding.ASCII.GetBytes(jwtSecret);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -73,8 +78,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// ? Ajout de l'autorisation (gestion des rôles)
 builder.Services.AddAuthorization();
+
 
 builder.Services.AddControllersWithViews()
     .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
