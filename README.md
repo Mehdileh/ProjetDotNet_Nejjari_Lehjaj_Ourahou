@@ -8,7 +8,7 @@ Gauniv est une plateforme de distribution de contenu et un éditeur de jeux vid�
 - **Gérer leurs profils utilisateurs** et paramètres de l'application.
 
 Ce projet est conçu en utilisant une architecture modulaire, incluant un **serveur web**, un **client Windows**, un **serveur de jeu** et un **jeu** développé avec **Godot, Unity ou WPF**.
----
+
 
 ## Architecture du projet
 La solution contient plusieurs modules :
