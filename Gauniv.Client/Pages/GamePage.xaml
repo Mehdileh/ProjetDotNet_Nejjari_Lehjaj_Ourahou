@@ -11,38 +11,97 @@
 
     <StackLayout Padding="10">
 
-        <!-- Checkbox pour filtrer les jeux possédés -->
-        <StackLayout Orientation="Horizontal">
+        <!-- 🎯 Filtres de recherche -->
+        <Frame Padding="10" BackgroundColor="LightGray" CornerRadius="10" Margin="0,0,0,10">
+            <StackLayout>
+
+                <Label Text="Filtres" FontAttributes="Bold" FontSize="16"/>
+
+                <!-- Filtre par nom -->
+                <Entry Placeholder="Rechercher un jeu..." Text="{Binding SearchName}" />
+
+                <!-- Filtre par prix min/max -->
+                <StackLayout Orientation="Horizontal" Spacing="10">
+                    <Entry Placeholder="Prix Min" Keyboard="Numeric" Text="{Binding MinPrice}" WidthRequest="100"/>
+                    <Entry Placeholder="Prix Max" Keyboard="Numeric" Text="{Binding MaxPrice}" WidthRequest="100"/>
+                </StackLayout>
+
+                <!-- Filtre par catégorie -->
+                <Picker Title="Catégorie" SelectedItem="{Binding SelectedCategory}">
+                    <Picker.ItemsSource>
+                        <x:Array Type="{x:Type x:String}">
+                            <x:String>Toutes</x:String>
+                            <x:String>RPG</x:String>
+                            <x:String>Shooter</x:String>
+                            <x:String>Action</x:String>
+                            <x:String>Stratégie</x:String>
+                        </x:Array>
+                    </Picker.ItemsSource>
+                </Picker>
+
+                <!-- Bouton pour appliquer les filtres -->
+                <Button Text="Appliquer les filtres"
+                        Command="{Binding ApplyFiltersCommand}"
+                        BackgroundColor="Blue"
+                        TextColor="White"
+                        Margin="0,10,0,0"/>
+            </StackLayout>
+        </Frame>
+
+        <!-- Checkbox pour afficher les jeux possédés -->
+        <StackLayout Orientation="Horizontal" Margin="0,0,0,10">
             <CheckBox IsChecked="{Binding ShowOwnedGames}" />
             <Label Text="Afficher uniquement mes jeux" VerticalOptions="Center"/>
         </StackLayout>
 
+        <!-- 📜 Liste des jeux -->
         <ListView ItemsSource="{Binding Games}"
                   SelectedItem="{Binding SelectedGame, Mode=TwoWay}"
                   HasUnevenRows="True">
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="{x:Type models:Game}">
                     <ViewCell>
-                        <StackLayout Padding="5">
-                            <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
-                            <Label Text="{Binding Description}" FontSize="14"/>
-                            <Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="14"/>
+                        <Frame Padding="10" CornerRadius="10" BorderColor="Gray">
+                            <StackLayout>
 
-                            <!-- Afficher le bon bouton selon si l'utilisateur possède le jeu -->
-                            <Button Text="Acheter" 
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameListViewModel}}, Path=BuyGameCommand}"
-                                    CommandParameter="{Binding .}"
-                                    IsVisible="{Binding IsOwned, Converter={StaticResource InverseBooleanConverter}}" />
+                                <Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
+                                <Label Text="{Binding Description}" FontSize="14"/>
+                                <Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="14"/>
+                                <Label Text="{Binding Categories}" FontSize="12" TextColor="Gray"/>
 
-                            <Button Text="Jouer" 
-                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameListViewModel}}, Path=PlayGameCommand}"
-                                    CommandParameter="{Binding .}"
-                                    IsVisible="{Binding IsOwned}" />
+                                <StackLayout Orientation="Horizontal" Spacing="10">
+                                    <!-- Bouton Acheter -->
+                                    <Button Text="Acheter"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameListViewModel}}, Path=BuyGameCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding IsOwned, Converter={StaticResource InverseBooleanConverter}}"
+                                            BackgroundColor="Green"
+                                            TextColor="White"/>
 
-                        </StackLayout>
+                                    <!-- Bouton Jouer -->
+                                    <Button Text="Jouer"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameListViewModel}}, Path=PlayGameCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding IsOwned}"
+                                            BackgroundColor="Blue"
+                                            TextColor="White"/>
+
+                                    <!-- Bouton Désinstaller -->
+                                    <Button Text="Désinstaller"
+                                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameListViewModel}}, Path=UninstallGameCommand}"
+                                            CommandParameter="{Binding .}"
+                                            IsVisible="{Binding IsOwned}"
+                                            BackgroundColor="Red"
+                                            TextColor="White"/>
+                                </StackLayout>
+
+                            </StackLayout>
+                        </Frame>
                     </ViewCell>
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+
     </StackLayout>
 </ContentPage>
+

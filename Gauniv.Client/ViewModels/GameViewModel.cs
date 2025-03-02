@@ -15,5 +15,8 @@ namespace Gauniv.Client.ViewModels
 
         public string CategoriesString => string.Join(", ", Game.Categories);
 
+
+
+
     }
 }

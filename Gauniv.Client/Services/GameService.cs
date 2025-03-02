@@ -22,13 +22,29 @@ namespace Gauniv.Client.Services
             };
         }
 
-        // ✅ Récupérer tous les jeux disponibles
-        public async Task<List<Game>> GetGamesAsync()
+        // ✅ Récupérer tous les jeux disponibles avec filtres
+        public async Task<List<Game>> GetGamesAsync(string name = null, decimal? minPrice = null, decimal? maxPrice = null, string category = null)
         {
             try
             {
-                Debug.WriteLine("📡 Envoi de la requête GET /games...");
-                var response = await _httpClient.GetAsync("games");
+                var queryParams = new List<string>();
+
+                if (!string.IsNullOrWhiteSpace(name))
+                    queryParams.Add($"name={Uri.EscapeDataString(name)}");
+
+                if (minPrice.HasValue)
+                    queryParams.Add($"minPrice={minPrice.Value}");
+
+                if (maxPrice.HasValue)
+                    queryParams.Add($"maxPrice={maxPrice.Value}");
+
+                if (!string.IsNullOrWhiteSpace(category) && category != "Toutes")
+                    queryParams.Add($"category={Uri.EscapeDataString(category)}");
+
+                string queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
+
+                Debug.WriteLine($"📡 Envoi de la requête GET /games{queryString}...");
+                var response = await _httpClient.GetAsync($"games{queryString}");
 
                 Debug.WriteLine($"📩 Réponse reçue : {response.StatusCode}");
 
@@ -169,9 +185,62 @@ namespace Gauniv.Client.Services
                 return false;
             }
         }
+
+        public async Task<bool> CheckGameOwnershipAsync(int gameId)
+        {
+            var token = Preferences.Get("token", null);
+            if (string.IsNullOrEmpty(token)) return false;
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"games/owned/{gameId}");
+            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await _httpClient.SendAsync(request);
+            if (!response.IsSuccessStatusCode) return false;
+
+            var json = await response.Content.ReadAsStringAsync();
+            var result = JsonSerializer.Deserialize<Dictionary<string, bool>>(json);
+            return result != null && result.ContainsKey("owned") && result["owned"];
+        }
+
+
+        public async Task<bool> UninstallGameAsync(int gameId)
+        {
+            try
+            {
+                string token = Preferences.Get("token", string.Empty);
+                if (string.IsNullOrEmpty(token))
+                {
+                    Debug.WriteLine("🚫 Aucun token trouvé, impossible de désinstaller !");
+                    return false;
+                }
+
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                Debug.WriteLine($"📡 Envoi de la requête DELETE /games/{gameId}/uninstall...");
+                var response = await _httpClient.DeleteAsync($"games/{gameId}/uninstall");
+
+                Debug.WriteLine($"📩 Réponse reçue : {response.StatusCode}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine("❌ Erreur lors de la désinstallation du jeu !");
+                    return false;
+                }
+
+                Debug.WriteLine("✅ Désinstallation réussie !");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"🚨 Exception UninstallGameAsync : {ex.Message}");
+                return false;
+            }
+        }
+
+
+
     }
 
-    // ✅ Modèle pour la liste des jeux
     class GameList
     {
         public int TotalCount { get; set; }

@@ -251,6 +251,45 @@ namespace Gauniv.WebServer.Api
             return Ok(ownedGamesDto);
         }
 
+        /// 📌 **GET /api/games/{id}/owned** - Vérifier si un jeu est acheté par l'utilisateur
+        [HttpGet("owned/{id}")]
+        [Authorize]
+        public async Task<IActionResult> IsGameOwned(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized("Utilisateur non authentifié.");
+
+            var isOwned = await _context.UserGames
+                .AnyAsync(ug => ug.UserId == userId && ug.GameId == id);
+
+            return Ok(new { owned = isOwned });
+        }
+
+        /// 📌 **DELETE /api/games/{id}/uninstall** - Désinstaller un jeu (le retirer de la bibliothèque de l'utilisateur)
+        [HttpDelete("{id}/uninstall")]
+        [Authorize] // Nécessite que l'utilisateur soit connecté
+        public async Task<IActionResult> UninstallGame(int id)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized("Utilisateur non authentifié.");
+
+            var userGame = await _context.UserGames
+                .FirstOrDefaultAsync(ug => ug.UserId == userId && ug.GameId == id);
+
+            if (userGame == null)
+                return NotFound("Vous ne possédez pas ce jeu.");
+
+            _context.UserGames.Remove(userGame);
+            await _context.SaveChangesAsync();
+
+            return Ok($"✅ Jeu désinstallé avec succès !");
+        }
+
+
+
+
 
 
 
