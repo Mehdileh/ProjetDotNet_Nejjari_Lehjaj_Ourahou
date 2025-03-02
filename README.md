@@ -99,7 +99,6 @@ http://localhost:5231/swagger/index.html
 - **Affichage des détails des jeux** : description, statuts, catégories.
 - **Gestion du profil utilisateur** : préférences, identifiants, stockage des jeux.
 - **Lancement et gestion des jeux** : statut (téléchargé, prêt, en jeu), démarrage/arrêt.
-- **Multijoueur** : communication avec le serveur de jeu.
 
 ---
 
