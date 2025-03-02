@@ -1,0 +1,59 @@
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
+             xmlns:models="clr-namespace:Gauniv.Client.Models"
+             x:Class="Gauniv.Client.Pages.GameAdminPage"
+             x:DataType="{x:Type vm:GameAdminViewModel}">
+
+	<ContentPage.BindingContext>
+		<vm:GameAdminViewModel />
+	</ContentPage.BindingContext>
+
+	<StackLayout Padding="10">
+
+		<Label Text="Gestion des Jeux" FontAttributes="Bold" FontSize="20" />
+
+		<!-- Formulaire d'ajout/modification -->
+		<Frame Padding="10" BackgroundColor="LightGray" CornerRadius="10" Margin="0,0,0,10">
+			<StackLayout>
+				<Label Text="Nom du jeu"/>
+				<Entry Text="{Binding GameName}" Placeholder="Nom du jeu"/>
+
+				<Label Text="Description"/>
+				<Editor Text="{Binding Description}" Placeholder="Description"/>
+
+				<Label Text="Prix"/>
+				<Entry Text="{Binding Price}" Placeholder="Prix" Keyboard="Numeric"/>
+
+				<Label Text="Catégorie"/>
+				<Picker ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" Title="Sélectionner une catégorie"/>
+
+				<Button Text="Ajouter le jeu" Command="{Binding AddGameCommand}" BackgroundColor="Green" TextColor="White"/>
+				<Button Text="Mettre à jour" Command="{Binding UpdateGameCommand}" BackgroundColor="Blue" TextColor="White" IsEnabled="{Binding SelectedGame, Mode=OneWay}"/>
+			</StackLayout>
+		</Frame>
+
+		<!-- Liste des jeux -->
+		<ListView ItemsSource="{Binding Games}" SelectedItem="{Binding SelectedGame, Mode=TwoWay}" HasUnevenRows="True">
+			<ListView.ItemTemplate>
+				<DataTemplate x:DataType="{x:Type models:Game}">
+					<ViewCell>
+						<Frame Padding="10" CornerRadius="10" BorderColor="Gray">
+							<StackLayout>
+								<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
+								<Label Text="{Binding Description}" FontSize="14"/>
+								<Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="14"/>
+								<Label Text="{Binding Categories}" FontSize="12" TextColor="Gray"/>
+
+								<StackLayout Orientation="Horizontal" Spacing="10">
+									<Button Text="Supprimer" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameAdminViewModel}}, Path=DeleteGameCommand}" CommandParameter="{Binding .}" BackgroundColor="Red" TextColor="White"/>
+								</StackLayout>
+							</StackLayout>
+						</Frame>
+					</ViewCell>
+				</DataTemplate>
+			</ListView.ItemTemplate>
+		</ListView>
+
+	</StackLayout>
+</ContentPage>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Gauniv.Client.Models;
@@ -235,6 +236,43 @@ namespace Gauniv.Client.Services
                 Debug.WriteLine($"🚨 Exception UninstallGameAsync : {ex.Message}");
                 return false;
             }
+        }
+
+        // ✅ Ajouter un jeu
+        public async Task<bool> AddGameAsync(string name, string description, decimal price, string category)
+        {
+            AddAuthHeader();
+            var gameData = new { Name = name, Description = description, Price = price, Categories = new List<string> { category } };
+            var json = JsonSerializer.Serialize(gameData);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("games", content);
+            return response.IsSuccessStatusCode;
+        }
+
+
+        private void AddAuthHeader()
+        {
+            string token = Preferences.Get("token", string.Empty);
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+        // ✅ Modifier un jeu
+        public async Task<bool> UpdateGameAsync(Game game)
+        {
+            AddAuthHeader();
+            var json = JsonSerializer.Serialize(game);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"games/{game.Id}", content);
+            return response.IsSuccessStatusCode;
+        }
+
+        // ✅ Supprimer un jeu
+        public async Task<bool> DeleteGameAsync(int gameId)
+        {
+            AddAuthHeader();
+            var response = await _httpClient.DeleteAsync($"games/{gameId}");
+            return response.IsSuccessStatusCode;
         }
 
 

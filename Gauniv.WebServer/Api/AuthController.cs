@@ -1,5 +1,6 @@
 ﻿using Gauniv.WebServer.Data;
 using Gauniv.WebServer.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -31,33 +32,28 @@ namespace Gauniv.WebServer.Api
         private async Task<string> GenerateJwtToken(User user)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-
-            // ✅ Récupération de la clé depuis la configuration
             var key = Encoding.ASCII.GetBytes(_configuration["Jwt:Secret"]);
 
-            // 🔹 **Récupérer les rôles de l'utilisateur**
             var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = roles.Select(role => new Claim(ClaimTypes.Role, role));
+            var roleClaims = roles.Select(role => new Claim("role", role)); // ✅ Assure-toi que le rôle est bien "role"
 
-            // 🔹 **Définir les claims JWT**
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Email, user.Email)
-            }.Union(roleClaims); // Ajouter les rôles
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email)
+    }.Union(roleClaims); // ✅ Ajout du rôle ici
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+
 
         /// 📌 **POST /api/auth/register** - Crée un nouvel utilisateur
         [HttpPost("register")]
@@ -123,6 +119,23 @@ namespace Gauniv.WebServer.Api
 
             await _userManager.AddToRoleAsync(user, model.Role);
             return Ok($"✅ Rôle {model.Role} assigné à {user.Email}");
+        }
+
+
+        [HttpGet("check-admin")]
+        [Authorize]
+        public async Task<IActionResult> CheckAdmin()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+                return Unauthorized();
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return NotFound();
+
+            var isAdmin = await _userManager.IsInRoleAsync(user, "Admin");
+            return Ok(isAdmin);
         }
     }
 }

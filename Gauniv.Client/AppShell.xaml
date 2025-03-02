@@ -13,4 +13,6 @@
     <!-- Page des Jeux (accessible après connexion) -->
     <ShellContent Title="Jeux" Route="games" ContentTemplate="{DataTemplate local:GamePage}" />
 
+    <ShellContent Route="admin" ContentTemplate="{DataTemplate local:GameAdminPage}" />
+
 </Shell>

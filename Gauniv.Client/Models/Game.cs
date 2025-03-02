@@ -10,5 +10,6 @@
         public List<string> Categories { get; set; } = new();
 
         public bool IsOwned { get; set; }
+
     }
 }

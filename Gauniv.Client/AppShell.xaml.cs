@@ -10,6 +10,8 @@ namespace Gauniv.Client
             InitializeComponent();
 
             Routing.RegisterRoute(nameof(GameDetailsPage), typeof(GameDetailsPage));
+            Routing.RegisterRoute(nameof(GamePage), typeof(GamePage));
+            Routing.RegisterRoute(nameof(GameAdminPage), typeof(GameAdminPage));
 
         }
     }
