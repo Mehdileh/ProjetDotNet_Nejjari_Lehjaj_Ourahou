@@ -1,24 +1,57 @@
 ﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Gauniv.Client.Pages.MyGamesPage"
              Shell.NavBarIsVisible="False"
+             BackgroundColor="#f5f5f5"
+             x:Class="Gauniv.Client.Pages.MyGamesPage"
              Title="Mes Jeux">
 
-	<StackLayout Padding="10">
-		<ListView x:Name="GamesListView"
+    <StackLayout Padding="20" Spacing="15">
+
+        <!-- Titre principal -->
+        <Label Text="🎮 Mes Jeux"
+               FontSize="26"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               TextColor="Black"/>
+
+        <!-- Liste des jeux possédés -->
+        <ListView x:Name="GamesListView"
                   ItemsSource="{Binding OwnedGames}"
-                  HasUnevenRows="True">
-			<ListView.ItemTemplate>
-				<DataTemplate>
-					<ViewCell>
-						<StackLayout Padding="10">
-							<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
-							<Label Text="{Binding Description}" FontSize="14"/>
-							<Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="14"/>
-						</StackLayout>
-					</ViewCell>
-				</DataTemplate>
-			</ListView.ItemTemplate>
-		</ListView>
-	</StackLayout>
+                  HasUnevenRows="True"
+                  BackgroundColor="Transparent"
+                  SeparatorVisibility="None">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Border Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="15" Margin="0,0,0,10">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+                            <StackLayout Spacing="5">
+
+                                <!-- Nom du jeu -->
+                                <Label Text="{Binding Name}"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       TextColor="Black"/>
+
+                                <!-- Description -->
+                                <Label Text="{Binding Description}"
+                                       FontSize="16"
+                                       TextColor="Gray"/>
+
+                                <!-- Prix -->
+                                <Label Text="{Binding Price, StringFormat='Prix: {0:C}'}"
+                                       FontSize="16"
+                                       TextColor="#007bff"
+                                       FontAttributes="Bold"/>
+
+                            </StackLayout>
+                        </Border>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+    </StackLayout>
 </ContentPage>

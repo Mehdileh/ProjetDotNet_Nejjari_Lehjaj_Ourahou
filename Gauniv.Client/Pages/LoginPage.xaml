@@ -2,36 +2,79 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
              Shell.NavBarIsVisible="False"
+             BackgroundColor="White"
              x:Class="Gauniv.Client.Pages.LoginPage">
 
     <ContentPage.BindingContext>
         <vm:LoginViewModel />
     </ContentPage.BindingContext>
 
-    <StackLayout Padding="20" Spacing="15" VerticalOptions="Center">
+    <!-- Utilisation de Grid pour une meilleure structure -->
+    <Grid Padding="30" RowSpacing="15">
 
-        <Label Text="Connexion" FontSize="30" HorizontalOptions="Center"/>
+        <!-- Définition des lignes -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <Entry Placeholder="Email" 
-               Text="{Binding Email}"
-               Keyboard="Email"
-               ReturnType="Next"/>
+        <!-- 🔐 Titre -->
+        <Label Text="🔐 Connexion" 
+               FontSize="30" 
+               FontAttributes="Bold"
+               TextColor="Black"
+               HorizontalOptions="Center"
+               Grid.Row="0"/>
 
-        <Entry Placeholder="Mot de passe" 
-               Text="{Binding Password}"
-               IsPassword="True"
-               ReturnType="Done"/>
+        <!-- ✉️ Champ Email -->
+        <Border Grid.Row="1" Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10"/>
+            </Border.StrokeShape>
+            <Entry Placeholder="✉️ Email" 
+                   Text="{Binding Email}"
+                   Keyboard="Email"
+                   ReturnType="Next"
+                   TextColor="Black"/>
+        </Border>
 
-        <Button Text="Se connecter"
-                Command="{Binding LoginCommand}"
-                BackgroundColor="Blue"
-                TextColor="White"
-                CornerRadius="10"
-                Padding="10"/>
+        <!-- 🔒 Champ Mot de passe -->
+        <Border Grid.Row="2" Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10"/>
+            </Border.StrokeShape>
+            <Entry Placeholder="🔒 Mot de passe" 
+                   Text="{Binding Password}"
+                   IsPassword="True"
+                   ReturnType="Done"
+                   TextColor="Black"/>
+        </Border>
 
-        <Button Text="Créer un compte"
+        <!-- ✅ Bouton de connexion avec ombre -->
+        <Border Grid.Row="3" StrokeThickness="0">
+            <Border.Shadow>
+                <Shadow Brush="#80000000" Offset="2,2" Radius="5"/>
+            </Border.Shadow>
+            <Button Text="Se connecter"
+                    Command="{Binding LoginCommand}"
+                    BackgroundColor="#007bff"
+                    TextColor="White"
+                    CornerRadius="10"
+                    FontSize="16"
+                    Padding="12"/>
+        </Border>
+
+        <!-- 🔵 Lien vers inscription -->
+        <Button Grid.Row="4" Text="Créer un compte"
                 Command="{Binding NavigateToRegisterCommand}"
                 BackgroundColor="Transparent"
-                TextColor="Blue"/>
-    </StackLayout>
+                TextColor="#007bff"
+                FontSize="14"
+                Padding="10"
+                FontAttributes="Bold"/>
+
+    </Grid>
 </ContentPage>

@@ -3,61 +3,90 @@
              xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
              xmlns:models="clr-namespace:Gauniv.Client.Models"
              x:Class="Gauniv.Client.Pages.GameAdminPage"
-			 Shell.NavBarIsVisible="False"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="White"
              x:DataType="{x:Type vm:GameAdminViewModel}">
 
+    <ContentPage.BindingContext>
+        <vm:GameAdminViewModel />
+    </ContentPage.BindingContext>
 
-	<ContentPage.BindingContext>
-		<vm:GameAdminViewModel />
-	</ContentPage.BindingContext>
+    <StackLayout Padding="20" Spacing="15">
 
-	<StackLayout Padding="10">
+        <!-- 🎮 Titre principal -->
+        <Label Text="Gestion des Jeux"
+               FontSize="26"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               TextColor="Black"/>
 
-		<Label Text="Gestion des Jeux" FontAttributes="Bold" FontSize="20" />
+        <!-- 📝 Formulaire d'ajout/modification -->
+        <Border Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="15" Margin="0,0,0,10">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12"/>
+            </Border.StrokeShape>
 
-		<!-- Formulaire d'ajout/modification -->
-		<Frame Padding="10" BackgroundColor="LightGray" CornerRadius="10" Margin="0,0,0,10">
-			<StackLayout>
-				<Label Text="Nom du jeu"/>
-				<Entry Text="{Binding GameName}" Placeholder="Nom du jeu"/>
+            <StackLayout Spacing="10">
 
-				<Label Text="Description"/>
-				<Editor Text="{Binding Description}" Placeholder="Description"/>
+                <Label Text="Nom du jeu" FontSize="18" FontAttributes="Bold" TextColor="Black"/>
+                <Entry Text="{Binding GameName}" Placeholder="Nom du jeu" BackgroundColor="White" />
 
-				<Label Text="Prix"/>
-				<Entry Text="{Binding Price}" Placeholder="Prix" Keyboard="Numeric"/>
+                <Label Text="Description" FontSize="18" FontAttributes="Bold" TextColor="Black"/>
+                <Editor Text="{Binding Description}" Placeholder="Description" BackgroundColor="White"/>
 
-				<Label Text="Catégorie"/>
-				<Picker ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" Title="Sélectionner une catégorie"/>
+                <Label Text="Prix" FontSize="18" FontAttributes="Bold" TextColor="Black"/>
+                <Entry Text="{Binding Price}" Placeholder="Prix" Keyboard="Numeric" BackgroundColor="White"/>
 
-				<Button Text="Ajouter le jeu" Command="{Binding AddGameCommand}" BackgroundColor="Green" TextColor="White"/>
-			</StackLayout>
-		</Frame>
+                <Label Text="Catégorie" FontSize="18" FontAttributes="Bold" TextColor="Black"/>
+                <Picker ItemsSource="{Binding Categories}" 
+                        SelectedItem="{Binding SelectedCategory}" 
+                        Title="Sélectionner une catégorie" />
 
-		<!-- Liste des jeux -->
-		<ListView ItemsSource="{Binding Games}" SelectedItem="{Binding SelectedGame, Mode=TwoWay}" HasUnevenRows="True">
-			<ListView.ItemTemplate>
-				<DataTemplate x:DataType="{x:Type models:Game}">
-					<ViewCell>
-						<Frame Padding="10" CornerRadius="10" BorderColor="Gray">
-							<StackLayout>
-								<Label Text="{Binding Name}" FontSize="18" FontAttributes="Bold"/>
-								<Label Text="{Binding Description}" FontSize="14"/>
-								<Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="14"/>
-								<Label Text="{Binding Categories}" FontSize="12" TextColor="Gray"/>
+                <Button Text="Ajouter le jeu"
+                        Command="{Binding AddGameCommand}"
+                        BackgroundColor="Green"
+                        TextColor="White"
+                        CornerRadius="8"
+                        FontSize="16"/>
+            </StackLayout>
+        </Border>
 
-								<StackLayout Orientation="Horizontal" Spacing="10">
-									<Button Text="Supprimer"
-												Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameAdminViewModel}}, Path=SupprimeGameCommand}"
-												CommandParameter="{Binding}"
-												BackgroundColor="Red" TextColor="White"/>
-								</StackLayout>
-							</StackLayout>
-						</Frame>
-					</ViewCell>
-				</DataTemplate>
-			</ListView.ItemTemplate>
-		</ListView>
+        <!-- 📜 Liste des jeux -->
+        <ListView ItemsSource="{Binding Games}"
+                  SelectedItem="{Binding SelectedGame, Mode=TwoWay}"
+                  HasUnevenRows="True"
+                  BackgroundColor="Transparent">
 
-	</StackLayout>
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="{x:Type models:Game}">
+                    <ViewCell>
+                        <Border Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="15" Margin="0,5,0,5">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="12"/>
+                            </Border.StrokeShape>
+
+                            <StackLayout Spacing="8">
+
+                                <Label Text="{Binding Name}" FontSize="20" FontAttributes="Bold" TextColor="Black"/>
+                                <Label Text="{Binding Description}" FontSize="16" TextColor="Gray"/>
+                                <Label Text="{Binding Price, StringFormat='Prix: {0:C}'}" FontSize="16" TextColor="DarkGreen" FontAttributes="Bold"/>
+                                <Label Text="{Binding CategoriesString}" FontSize="14" TextColor="Gray"/>
+
+                                <Button Text="🗑️ Supprimer"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameAdminViewModel}}, Path=SupprimeGameCommand}"
+                                        CommandParameter="{Binding}"
+                                        BackgroundColor="Red"
+                                        TextColor="White"
+                                        CornerRadius="8"
+                                        FontSize="14"
+                                        HorizontalOptions="Fill"
+                                        Padding="6"/>
+                            </StackLayout>
+                        </Border>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+    </StackLayout>
 </ContentPage>

@@ -2,23 +2,107 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
              Shell.NavBarIsVisible="False"
+             BackgroundColor="White"
              x:Class="Gauniv.Client.Pages.RegisterPage">
 
     <ContentPage.BindingContext>
         <vm:RegisterViewModel />
     </ContentPage.BindingContext>
 
-    <StackLayout Padding="20">
-        <Label Text="Inscription" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+    <!-- 🎯 Utilisation d'une Grid avec des lignes bien définies -->
+    <Grid Padding="30" RowSpacing="15">
 
-        <Entry Placeholder="Nom d'utilisateur" Text="{Binding Username}" />
-        <Entry Placeholder="Email" Text="{Binding Email}" Keyboard="Email" />
-        <Entry Placeholder="Mot de passe" Text="{Binding Password}" IsPassword="True" />
-        <Entry Placeholder="Prénom" Text="{Binding FirstName}" />
-        <Entry Placeholder="Nom de famille" Text="{Binding LastName}" />
+        <!-- Définition des lignes -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-        <Button Text="S'inscrire" Command="{Binding RegisterCommand}" BackgroundColor="Green" TextColor="White" />
+        <!-- 🔐 Titre -->
+        <Label Text="📝 Inscription" 
+               FontSize="30" 
+               FontAttributes="Bold"
+               TextColor="Black"
+               HorizontalOptions="Center"
+               Grid.Row="0"/>
 
-        <Button Text="Déjà un compte ? Se connecter" Command="{Binding NavigateToLoginCommand}" BackgroundColor="Transparent" TextColor="Blue" />
-    </StackLayout>
+        <!-- 📛 Champ Nom d'utilisateur -->
+        <Border Grid.Row="1" Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10"/>
+            </Border.StrokeShape>
+            <Entry Placeholder="👤 Nom d'utilisateur" 
+                   Text="{Binding Username}"
+                   TextColor="Black"/>
+        </Border>
+
+        <!-- 📧 Champ Email -->
+        <Border Grid.Row="2" Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10"/>
+            </Border.StrokeShape>
+            <Entry Placeholder="✉️ Email" 
+                   Text="{Binding Email}"
+                   Keyboard="Email"
+                   TextColor="Black"/>
+        </Border>
+
+        <!-- 🔑 Champ Mot de passe -->
+        <Border Grid.Row="3" Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10"/>
+            </Border.StrokeShape>
+            <Entry Placeholder="🔒 Mot de passe" 
+                   Text="{Binding Password}"
+                   IsPassword="True"
+                   TextColor="Black"/>
+        </Border>
+
+        <!-- 🏷️ Champ Prénom -->
+        <Border Grid.Row="4" Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10"/>
+            </Border.StrokeShape>
+            <Entry Placeholder="📝 Prénom" 
+                   Text="{Binding FirstName}"
+                   TextColor="Black"/>
+        </Border>
+
+        <!-- 🏷️ Champ Nom de famille -->
+        <Border Grid.Row="5" Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="5">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="10"/>
+            </Border.StrokeShape>
+            <Entry Placeholder="📝 Nom de famille" 
+                   Text="{Binding LastName}"
+                   TextColor="Black"/>
+        </Border>
+
+        <!-- ✅ Bouton d'inscription -->
+        <Button Grid.Row="6"
+                Text="S'inscrire"
+                Command="{Binding RegisterCommand}"
+                BackgroundColor="Green"
+                TextColor="White"
+                CornerRadius="10"
+                FontSize="16"
+                Padding="12"/>
+
+        <!-- 🔵 Lien vers connexion -->
+        <Button Grid.Row="7"
+                Text="Déjà un compte ? Se connecter"
+                Command="{Binding NavigateToLoginCommand}"
+                BackgroundColor="Transparent"
+                TextColor="#007bff"
+                FontSize="14"
+                Padding="10"
+                FontAttributes="Bold"/>
+
+    </Grid>
 </ContentPage>

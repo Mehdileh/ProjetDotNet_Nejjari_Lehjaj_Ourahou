@@ -3,17 +3,51 @@
              xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
              x:Class="Gauniv.Client.Pages.GameDetailsPage"
              Shell.NavBarIsVisible="False"
-             x:DataType="{x:Type vm:GameListViewModel}">
-             
-    
+             BackgroundColor="White"
+             x:DataType="{x:Type vm:GameDetailsViewModel}">
 
     <ContentPage.BindingContext>
         <vm:GameDetailsViewModel />
     </ContentPage.BindingContext>
 
-    <StackLayout Padding="10">
-        <Label Text="{Binding Game.Name}" FontSize="24" FontAttributes="Bold"/>
-        <Label Text="{Binding Game.Description}" FontSize="18"/>
-        <Label Text="{Binding Game.Price, StringFormat='Prix: {0:C}'}" FontSize="18"/>
+    <StackLayout Padding="20" Spacing="15">
+
+        <!-- 🏆 Titre du jeu -->
+        <Label Text="{Binding Game.Name}" 
+               FontSize="26" 
+               FontAttributes="Bold"
+               TextColor="Black"
+               HorizontalOptions="Center" />
+
+        <!-- 🎯 Cadre contenant les détails -->
+        <Border Stroke="LightGray" StrokeThickness="2" BackgroundColor="White" Padding="15">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="12"/>
+            </Border.StrokeShape>
+
+            <StackLayout Spacing="10">
+
+                <Label Text="📝 Description :" 
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="Black"/>
+
+                <Label Text="{Binding Game.Description}" 
+                       FontSize="16"
+                       TextColor="Gray"/>
+
+                <Label Text="💰 Prix :" 
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="Black"/>
+
+                <Label Text="{Binding Game.Price, StringFormat='Prix: {0:C}'}" 
+                       FontSize="18"
+                       TextColor="DarkGreen"
+                       FontAttributes="Bold"/>
+
+            </StackLayout>
+        </Border>
+
     </StackLayout>
 </ContentPage>

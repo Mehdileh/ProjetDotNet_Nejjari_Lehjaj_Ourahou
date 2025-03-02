@@ -13,7 +13,12 @@ namespace Gauniv.Client.ViewModels
             Game = game;
         }
 
-        public string CategoriesString => string.Join(", ", Game.Categories);
+        public string CategoriesString => Game.Categories != null && Game.Categories.Any()
+    ? string.Join(", ", Game.Categories)
+    : "Aucune catégorie";
+
+
+
 
 
 
