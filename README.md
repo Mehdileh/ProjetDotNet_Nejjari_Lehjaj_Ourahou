@@ -51,6 +51,16 @@ Le projet repose sur **Docker** pour le déploiement des services (base de donn�
    ```
 ---
 
+## 🔑 Identifiants de Connexion
+Voici les identifiants pour tester l'application avec les rôles Admin et Player :
+
+| Rôle   | Email               | Mot de passe |
+|-----------|---------------------|--------------|
+| **ADMIN** | `admin@example.com`    | `admin123`   |
+| **PLAYER**  | `player@example.com` | `player123`    |
+
+---
+
 ## API REST
 L'API REST de `Gauniv.WebServer` est documentée avec **Swagger** et accessible à l'adresse suivante :
 ```
