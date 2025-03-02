@@ -98,13 +98,12 @@ http://localhost:5231/swagger/index.html
 - **Gestion des jeux** : affichage, filtres, téléchargement, suppression.
 - **Affichage des détails des jeux** : description, statuts, catégories.
 - **Gestion du profil utilisateur** : préférences, identifiants, stockage des jeux.
-- **Lancement et gestion des jeux** : statut (téléchargé, prêt, en jeu), démarrage/arrêt.
-
+  
 ---
+
+Note : Toutes les API mentionnées sont fonctionnelles, mais en raison du temps limité, nous n'avons pas pu les intégrer toutes dans l'application.
 
 ## Auteurs
 - **NEJJARI Mohamed Nizar**
 - **LEHJAJ Mehdi**
 - **OURAHOU Yassir**
-
-
