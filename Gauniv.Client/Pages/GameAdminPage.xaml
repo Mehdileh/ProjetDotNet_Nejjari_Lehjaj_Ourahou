@@ -3,7 +3,9 @@
              xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
              xmlns:models="clr-namespace:Gauniv.Client.Models"
              x:Class="Gauniv.Client.Pages.GameAdminPage"
+			 Shell.NavBarIsVisible="False"
              x:DataType="{x:Type vm:GameAdminViewModel}">
+
 
 	<ContentPage.BindingContext>
 		<vm:GameAdminViewModel />
@@ -29,7 +31,6 @@
 				<Picker ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" Title="Sélectionner une catégorie"/>
 
 				<Button Text="Ajouter le jeu" Command="{Binding AddGameCommand}" BackgroundColor="Green" TextColor="White"/>
-				<Button Text="Mettre à jour" Command="{Binding UpdateGameCommand}" BackgroundColor="Blue" TextColor="White" IsEnabled="{Binding SelectedGame, Mode=OneWay}"/>
 			</StackLayout>
 		</Frame>
 
@@ -46,7 +47,10 @@
 								<Label Text="{Binding Categories}" FontSize="12" TextColor="Gray"/>
 
 								<StackLayout Orientation="Horizontal" Spacing="10">
-									<Button Text="Supprimer" Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameAdminViewModel}}, Path=DeleteGameCommand}" CommandParameter="{Binding .}" BackgroundColor="Red" TextColor="White"/>
+									<Button Text="Supprimer"
+												Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GameAdminViewModel}}, Path=SupprimeGameCommand}"
+												CommandParameter="{Binding}"
+												BackgroundColor="Red" TextColor="White"/>
 								</StackLayout>
 							</StackLayout>
 						</Frame>

@@ -42,6 +42,9 @@ namespace Gauniv.Client.Services
                 if (!string.IsNullOrWhiteSpace(category) && category != "Toutes")
                     queryParams.Add($"category={Uri.EscapeDataString(category)}");
 
+                // 🔥 Ajout de `limit=100` pour récupérer plus de jeux
+                queryParams.Add("limit=100");
+
                 string queryString = queryParams.Count > 0 ? "?" + string.Join("&", queryParams) : "";
 
                 Debug.WriteLine($"📡 Envoi de la requête GET /games{queryString}...");
@@ -69,6 +72,7 @@ namespace Gauniv.Client.Services
                 return new List<Game>();
             }
         }
+
 
         // ✅ Récupérer un jeu spécifique par son ID
         public async Task<Game> GetGameByIdAsync(int id)
@@ -241,15 +245,17 @@ namespace Gauniv.Client.Services
         // ✅ Ajouter un jeu
         public async Task<bool> AddGameAsync(string name, string description, decimal price, string category)
         {
-            AddAuthHeader();
+            var token = Preferences.Get("token", string.Empty);
+            if (string.IsNullOrEmpty(token)) return false;
+
             var gameData = new { Name = name, Description = description, Price = price, Categories = new List<string> { category } };
             var json = JsonSerializer.Serialize(gameData);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var response = await _httpClient.PostAsync("games", content);
             return response.IsSuccessStatusCode;
         }
-
 
         private void AddAuthHeader()
         {
@@ -270,11 +276,37 @@ namespace Gauniv.Client.Services
         // ✅ Supprimer un jeu
         public async Task<bool> DeleteGameAsync(int gameId)
         {
-            AddAuthHeader();
-            var response = await _httpClient.DeleteAsync($"games/{gameId}");
-            return response.IsSuccessStatusCode;
-        }
+            try
+            {
+                var token = Preferences.Get("token", string.Empty);
+                if (string.IsNullOrEmpty(token))
+                {
+                    Debug.WriteLine("🚫 Aucun token trouvé, impossible de supprimer !");
+                    return false;
+                }
 
+                // ✅ Assurez-vous que l’en-tête Authorization est bien défini
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                Debug.WriteLine($"📡 Envoi de la requête DELETE /games/{gameId}...");
+
+                var response = await _httpClient.DeleteAsync($"games/{gameId}");
+                Debug.WriteLine($"📩 Réponse reçue : {response.StatusCode}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine("❌ Erreur lors de la suppression du jeu !");
+                    return false;
+                }
+
+                Debug.WriteLine("✅ Suppression réussie !");
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"🚨 Exception DeleteGameAsync : {ex.Message}");
+                return false;
+            }
+        }
 
 
     }

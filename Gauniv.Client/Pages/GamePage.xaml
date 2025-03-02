@@ -3,6 +3,7 @@
              xmlns:vm="clr-namespace:Gauniv.Client.ViewModels"
              xmlns:models="clr-namespace:Gauniv.Client.Models"
              x:Class="Gauniv.Client.Pages.GamePage"
+             Shell.NavBarIsVisible="False"
              x:DataType="{x:Type vm:GameListViewModel}">
 
     <ContentPage.BindingContext>

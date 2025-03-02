@@ -47,6 +47,7 @@ namespace Gauniv.Client.ViewModels
         public ICommand UpdateGameCommand { get; }
         public ICommand DeleteGameCommand { get; }
         public ICommand LoadGamesCommand { get; }
+        public ICommand SupprimeGameCommand { get; }
 
         public GameAdminViewModel()
         {
@@ -56,6 +57,8 @@ namespace Gauniv.Client.ViewModels
             UpdateGameCommand = new Command(async () => await UpdateGame());
             DeleteGameCommand = new Command(async () => await DeleteGame());
             LoadGamesCommand = new Command(async () => await LoadGames());
+            SupprimeGameCommand = new Command<Game>(async (game) => await SupprimeGame(game));
+
 
             _ = LoadGames();
         }
@@ -82,6 +85,7 @@ namespace Gauniv.Client.ViewModels
             }
         }
 
+
         private async Task UpdateGame()
         {
             if (SelectedGame == null) return;
@@ -89,7 +93,7 @@ namespace Gauniv.Client.ViewModels
             SelectedGame.Name = GameName;
             SelectedGame.Description = Description;
             SelectedGame.Price = Price;
-            SelectedGame.Categories = new List<string> { SelectedCategory }; // ✅ Correction ici
+            SelectedGame.Categories = SelectedCategory.Split(',').Select(c => c.Trim()).ToList();
 
             bool success = await _gameService.UpdateGameAsync(SelectedGame);
             if (success)
@@ -110,7 +114,7 @@ namespace Gauniv.Client.ViewModels
             bool confirm = await Application.Current.MainPage.DisplayAlert("Confirmation", "Voulez-vous supprimer ce jeu ?", "Oui", "Non");
             if (!confirm) return;
 
-            bool success = await _gameService.DeleteGameAsync(SelectedGame.Id);
+            bool success = await _gameService.UninstallGameAsync(SelectedGame.Id);
             if (success)
             {
                 await Application.Current.MainPage.DisplayAlert("Succès", "Jeu supprimé", "OK");
@@ -121,5 +125,26 @@ namespace Gauniv.Client.ViewModels
                 await Application.Current.MainPage.DisplayAlert("Erreur", "Échec de la suppression", "OK");
             }
         }
+
+        private async Task SupprimeGame(Game game)
+        {
+            if (game == null) return;
+
+            bool confirm = await Application.Current.MainPage.DisplayAlert("Confirmation", "Voulez-vous supprimer ce jeu ?", "Oui", "Non");
+            if (!confirm) return;
+
+            bool success = await _gameService.DeleteGameAsync(game.Id);
+            if (success)
+            {
+                await Application.Current.MainPage.DisplayAlert("Succès", "Jeu supprimé", "OK");
+                await LoadGames();  // Rafraîchir la liste après suppression
+            }
+            else
+            {
+                await Application.Current.MainPage.DisplayAlert("Erreur", "Échec de la suppression", "OK");
+            }
+        }
+
+
     }
 }

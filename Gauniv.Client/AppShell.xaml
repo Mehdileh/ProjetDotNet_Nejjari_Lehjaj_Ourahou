@@ -2,7 +2,8 @@
 <Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
        xmlns:local="clr-namespace:Gauniv.Client.Pages"
-       x:Class="Gauniv.Client.AppShell">
+       x:Class="Gauniv.Client.AppShell"
+        Shell.NavBarIsVisible="False">
 
     <!-- Page de Connexion (Accueil par défaut) -->
     <ShellContent Title="Connexion" Route="LoginPage" ContentTemplate="{DataTemplate local:LoginPage}" />
